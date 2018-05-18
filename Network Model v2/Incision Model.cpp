@@ -338,6 +338,7 @@ void incision_model(int& dt, vector<vector<double>>& Q, vector<vector<double>>& 
 			}
 		}
 
+
 		//Only call bank erosion model at daily time step, if requested
 		if ((bank_erosion != "none") & (Q_iter != Q_iter_old) & (i != 0)) {
 			//if (bank_erosion != "none"){
