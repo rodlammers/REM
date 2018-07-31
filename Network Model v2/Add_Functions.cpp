@@ -1045,3 +1045,45 @@ void check_files(string& input_path, vector<string>& file_names, string& type) {
 	}
 
 }
+
+void check_file_size(string& input_path, vector<string>& file_names, vector<int>& ncols, vector<int>& nrows) {
+
+	double n_files = file_names.size();
+
+	for (int i = 0; i < n_files; ++i) {
+		ifstream input_file(input_path + file_names[i]);
+
+		if (input_file) {
+			//Count the number of lines and columns
+			int n_lines = 0, n_col = 0;
+			string line, temp;
+			stringstream ss;
+
+			if (ncols[i] != 0) {
+				getline(input_file, line);
+				ss.clear();
+				ss << line;
+				while (ss >> temp) ++n_col;
+				++n_lines;
+
+				if (n_col != ncols[i]) {
+					ofstream error_file(input_path + "MODEL ERRORS.txt");
+					error_file << "ERROR: " << file_names[i] << " doesn't have correct number of columns. Should be " <<
+						ncols[i] << ", not " << n_col << "\n";
+					exit(1);
+				}
+			}
+
+			if (nrows[i] != 0) {
+				while (getline(input_file, line)) ++n_lines;
+
+				if (n_lines != nrows[i]) {
+					ofstream error_file(input_path + "MODEL ERRORS.txt");
+					error_file << "ERROR: " << file_names[i] << " doesn't have correct number of rows. Should be " <<
+						nrows[i] << ", not " << n_lines << "\n";
+					exit(1);
+				}
+			}
+		}
+	}
+}

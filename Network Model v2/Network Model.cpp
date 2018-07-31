@@ -98,29 +98,6 @@ int main() {
 
 	std::cout << "Input file path: " << input_path << "\n";
 	
-	//Check all required input files exist
-	vector<string> file_names = { "Input bank prop.txt",
-		"Input bed cohesive.txt",
-		"Input Ds.txt",
-		"Input fp geometry.txt",
-		"Input LB geometry.txt",
-		"Input RB geometry.txt",
-		"Input length.txt",
-		"Input link.txt",
-		"Input n values.txt",
-		"Input ps.txt",
-		"Input Q.txt",
-		"Input width.txt",
-		"Input z.txt" };
-	string file_type = "REQUIRED";
-	check_files(input_path, file_names, file_type);
-
-	file_names = { "Input sed supply.txt",
-					"Input knickpoint.txt",
-					"Input meandering.txt"};
-	file_type = "OPTIONAL";
-	check_files(input_path, file_names, file_type);
-
 	//Get inputs from file
 	ifstream Infile;
 	Infile.open(input_path + "Model Inputs.txt");
@@ -161,6 +138,29 @@ int main() {
 	int n_days = n_lines;
 	int n_ts = n_days * dt_Q / dt; //number of time steps for simulation
 	int n_nodes = n_col; //number of nodes/reaches
+
+	//Check all required input files exist
+	vector<string> file_names_req = { "Input bank prop.txt",
+		"Input bed cohesive.txt",
+		"Input Ds.txt",
+		"Input fp geometry.txt",
+		"Input LB geometry.txt",
+		"Input RB geometry.txt",
+		"Input length.txt",
+		"Input link.txt",
+		"Input n values.txt",
+		"Input ps.txt",
+		"Input Q.txt",
+		"Input width.txt",
+		"Input z.txt" };
+	string file_type = "REQUIRED";
+	check_files(input_path, file_names_req, file_type);
+
+	vector<string> file_names_opt = { "Input sed supply.txt",
+		"Input knickpoint.txt",
+		"Input meandering.txt" };
+	file_type = "OPTIONAL";
+	check_files(input_path, file_names_opt, file_type);
 
 	//Link matrix - specifies how reaches connect, network geometry
 	vector<vector<int>> link(2, vector<int>(n_nodes));
@@ -220,6 +220,24 @@ int main() {
 	
 	Ds_file.close();
 
+	//Check number of rows and columns in input files
+	int n_files = file_names_req.size();
+	vector<int> cols_req(n_files);
+	vector<int> rows_req(n_files);
+	if (input_type == "reach") {
+		cols_req = { 12, 2, 1, 3, 4, 4, 1, n_nodes, 2, n_dclass, n_nodes, 1, 1, 1 };
+		rows_req = { n_nodes, n_nodes, n_dclass, n_nodes, n_nodes, n_nodes, n_nodes, 2, n_nodes, n_nodes, 0, n_nodes, n_nodes + 1 };
+	}
+	else {
+		cols_req = { 12, n_nodes * 2, 1, 3, 4, 4, 1, n_nodes, 2, n_dclass, n_nodes, 1, 1, n_nodes + 1 };
+		rows_req = { n_nodes, 0, n_dclass, n_nodes, n_nodes, n_nodes, n_nodes, 2, n_nodes, n_nodes, 0, n_nodes, 0 };
+	}
+	check_file_size(input_path, file_names_req, cols_req, rows_req);
+
+	vector<int> cols_opt = { n_nodes, 5, 2 };
+	vector<int> rows_opt = { 0, 0, n_nodes };
+	check_file_size(input_path, file_names_opt, cols_opt, rows_opt);
+
 	//Sediment supply
 	vector<vector<double>> sed_supply(n_days, vector<double>(n_nodes));
 
@@ -246,8 +264,7 @@ int main() {
 
 	//Get all remaining inputs
 	vector<vector<double>> bed_z(n_nodes + 1, vector<double>(max_xs));
-	vector<vector<double>> bottom_width(n_nodes, vector<double>(max_xs));
-	vector<vector<double>> height_RB(n_nodes, vector<double>(max_xs));
+	vector<vector<double>> bottom_width(n_nodes, vector<double>(max_xs));	vector<vector<double>> height_RB(n_nodes, vector<double>(max_xs));
 	vector<vector<double>> toe_height_RB(n_nodes, vector<double>(max_xs));
 	vector<vector<double>> angle_RB(n_nodes, vector<double>(max_xs));
 	vector<vector<double>> toe_angle_RB(n_nodes, vector<double>(max_xs));

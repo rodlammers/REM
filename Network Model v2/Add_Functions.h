@@ -80,4 +80,6 @@ double meandering_eroded_area(double dx, double n_bends, double Rc, double erode
 
 void check_files(string& input_path, vector<string>& file_names, string& type);
 
+void check_file_size(string& input_path, vector<string>& file_names, vector<int>& ncols, vector<int>& nrows);
+
 #endif
