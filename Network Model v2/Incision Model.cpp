@@ -325,7 +325,7 @@ void incision_model(int& dt, vector<vector<double>>& Q, vector<vector<double>>& 
 				}
 			}
 
-			time = dt * i / dt_Q;
+			time = dt * i / 86400.0;
 			print_bank_outputs(time, loading_file, bank_sed_mass, bank_p_mass, cohesive_sed_mass, knick_sed_mass, 
 				bed_p_mass);
 
@@ -353,7 +353,7 @@ void incision_model(int& dt, vector<vector<double>>& Q, vector<vector<double>>& 
 
 		//Output data at user specified frequency
 		if ((i != 0) & ((dt * i) % (dt_output * dt_Q) == 0)) {
-			time = dt * i / dt_Q;
+			time = dt * i / 86400.0;
 			printOutputs(zout_file, bed_z, bottom_width, width_file, time, sinuosity,
 				sinuosity_out_file, dx_array, dxout_file, Ds, Ds_log, ps, D50_file, n_xs, stream_power_file,
 				slope, q, input_path, slope_file, Rc_file, Rc, top_width);
@@ -400,7 +400,7 @@ void incision_model(int& dt, vector<vector<double>>& Q, vector<vector<double>>& 
 
 	}
 
-	time = dt * (n_ts - 1) / dt_Q;
+	time = dt * (n_ts - 1) / 86400.0;
 	print_geometry_final(height_LB, toe_height_LB, angle_LB,
 		toe_angle_LB, height_RB, toe_height_RB, angle_RB,
 		toe_angle_RB, bottom_width, fp_angle, fp_width_R, fp_width_L, bed_z,

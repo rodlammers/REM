@@ -92,7 +92,7 @@ int main() {
 		input_path = "";
 	}
 	else {
-		input_path = "U:/Network Model v2/";
+		input_path = "C:/Users/rlammers/Documents/WORK/Network Model v2/";
 	}
 	infile.close();
 
