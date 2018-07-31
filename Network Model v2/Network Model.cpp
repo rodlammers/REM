@@ -98,6 +98,29 @@ int main() {
 
 	std::cout << "Input file path: " << input_path << "\n";
 	
+	//Check all required input files exist
+	vector<string> file_names = { "Input bank prop.txt",
+		"Input bed cohesive.txt",
+		"Input Ds.txt",
+		"Input fp geometry.txt",
+		"Input LB geometry.txt",
+		"Input RB geometry.txt",
+		"Input length.txt",
+		"Input link.txt",
+		"Input n values.txt",
+		"Input ps.txt",
+		"Input Q.txt",
+		"Input width.txt",
+		"Input z.txt" };
+	string file_type = "REQUIRED";
+	check_files(input_path, file_names, file_type);
+
+	file_names = { "Input sed supply.txt",
+					"Input knickpoint.txt",
+					"Input meandering.txt"};
+	file_type = "OPTIONAL";
+	check_files(input_path, file_names, file_type);
+
 	//Get inputs from file
 	ifstream Infile;
 	Infile.open(input_path + "Model Inputs.txt");

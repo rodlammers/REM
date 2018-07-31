@@ -78,4 +78,6 @@ long double adjust_chnl(vector<double>& chnl_x, vector<double>& chnl_y, double& 
 
 double meandering_eroded_area(double dx, double n_bends, double Rc, double eroded_dist);
 
+void check_files(string& input_path, vector<string>& file_names, string& type);
+
 #endif

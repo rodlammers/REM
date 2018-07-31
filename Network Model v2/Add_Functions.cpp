@@ -1025,3 +1025,17 @@ double meandering_eroded_area(double dx, double n_bends, double Rc, double erode
 
 	return(A_diff);
 }
+
+void check_files(string& input_path, vector<string>& file_names, string& type) {
+
+	double n_files = file_names.size();
+
+	for (int i = 0; i < n_files; ++i) {
+		ifstream input_file(input_path + file_names[i]);
+
+		if (!input_file) {
+			cout << "WARNING: " << type << " INPUT FILE IS MISSING: " << file_names[i] << "\n";
+		}
+	}
+
+}
