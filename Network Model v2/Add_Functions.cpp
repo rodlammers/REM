@@ -1035,6 +1035,12 @@ void check_files(string& input_path, vector<string>& file_names, string& type) {
 
 		if (!input_file) {
 			cout << "WARNING: " << type << " INPUT FILE IS MISSING: " << file_names[i] << "\n";
+
+			if (type == "REQUIRED") {
+				ofstream error_file(input_path + "MODEL ERRORS.txt");
+				error_file << "WARNING: " << type << " INPUT FILE IS MISSING: " << file_names[i] << "\n";
+				exit(1);
+			}
 		}
 	}
 

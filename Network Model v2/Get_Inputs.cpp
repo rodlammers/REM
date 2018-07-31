@@ -248,6 +248,16 @@ void input_rest(const string& input_path, string& input_type, int& n_nodes, int&
 		RB_file >> angle_RB[i][0];
 		RB_file >> toe_angle_RB[i][0];
 
+		if (angle_RB[i][0] > 90 | toe_angle_RB[i][0] > 90) {
+			ofstream error_file(input_path + "MODEL ERRORS.txt");
+			error_file << "ERROR: Bank angle or toe angle cannot exceed 90 degrees (right bank)\n";
+			exit(1);
+		}
+		if (toe_height_RB[i][0] > height_RB[i][0]) {
+			ofstream error_file(input_path + "MODEL ERRORS.txt");
+			error_file << "ERROR: Toe height cannot exceed bank height (right bank)\n";
+			exit(1);
+		}
 		//Convert to radians
 		angle_RB[i][0] = angle_RB[i][0] * M_PI / 180;
 		toe_angle_RB[i][0] = toe_angle_RB[i][0] * M_PI / 180;
@@ -272,6 +282,16 @@ void input_rest(const string& input_path, string& input_type, int& n_nodes, int&
 		LB_file >> angle_LB[i][0];
 		LB_file >> toe_angle_LB[i][0];
 
+		if (angle_LB[i][0] > 90 | toe_angle_LB[i][0] > 90) {
+			ofstream error_file(input_path + "MODEL ERRORS.txt");
+			error_file << "ERROR: Bank angle or toe angle cannot exceed 90 degrees (left bank)\n";
+			exit(1);
+		}
+		if (toe_height_LB[i][0] > height_LB[i][0]) {
+			ofstream error_file(input_path + "MODEL ERRORS.txt");
+			error_file << "ERROR: Toe height cannot exceed bank height (left bank)\n";
+			exit(1);
+		}
 		//Convert to radians
 		angle_LB[i][0] = angle_LB[i][0] * M_PI / 180;
 		toe_angle_LB[i][0] = toe_angle_LB[i][0] * M_PI / 180;
@@ -339,13 +359,20 @@ void input_rest(const string& input_path, string& input_type, int& n_nodes, int&
 	ps_file.open(input_path + "Input ps.txt");
 
 	for (int j = 0; j < n_nodes; j++) {
+		double ps_sum = 0;
 		for (int m = 0; m < n_dclass; m++) {
 			ps_file >> ps[j][0][m];
+			ps_sum += ps[j][0][m];
 			//Populate all XS in reach
 			for (int k = 0; k < n_xs[j]; ++k) {
 				ps[j][k][m] = ps[j][0][m];
 				fs[j][k][m] = ps[j][0][m];
 			}
+		}
+		if (abs(ps_sum - 1.0) > 0.01) {
+			ofstream error_file(input_path + "MODEL ERRORS.txt");
+			error_file << "ERROR: Sum of grain size fractions must equal 1 (reach " << j + 1 << ")\n";
+			exit(1);
 		}
 	}
 	ps_file.close();
