@@ -1,0 +1,9 @@
+// Hint files help the Visual Studio IDE interpret Visual C++ identifiers
+// such as names of functions and macros.
+// For more information see https://go.microsoft.com/fwlink/?linkid=865984
+
+#define BOOST_NOEXCEPT_IF
+
+#define BOOST_MATH_IS_FLOAT(T) (std::is_floating_point<T>::value)
+#define BOOST_MATH_IS_FLOAT(T) (boost::is_floating_point<T>::value)
+#define BOOST_MATH_IS_FLOAT(T)

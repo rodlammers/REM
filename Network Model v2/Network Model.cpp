@@ -92,7 +92,7 @@ int main() {
 		input_path = "";
 	}
 	else {
-		input_path = "C:/Users/rlammers/Documents/WORK/Network Model v2/";
+		input_path = "C:/Users/rwl21875/Documents/WORK/Network Model v2/";
 	}
 	infile.close();
 
@@ -146,13 +146,18 @@ int main() {
 		"Input fp geometry.txt",
 		"Input LB geometry.txt",
 		"Input RB geometry.txt",
-		"Input length.txt",
 		"Input link.txt",
 		"Input n values.txt",
 		"Input ps.txt",
 		"Input Q.txt",
 		"Input width.txt",
-		"Input z.txt" };
+		"Input z.txt",
+		"Input length.txt"};
+
+	if (input_type == "profile") {
+		file_names_req.pop_back(); //Remove "Input length" from list of required files if
+								  //input type is "profile"
+	}
 	string file_type = "REQUIRED";
 	check_files(input_path, file_names_req, file_type);
 
@@ -225,12 +230,12 @@ int main() {
 	vector<int> cols_req(n_files);
 	vector<int> rows_req(n_files);
 	if (input_type == "reach") {
-		cols_req = { 12, 2, 1, 3, 4, 4, 1, n_nodes, 2, n_dclass, n_nodes, 1, 1, 1 };
-		rows_req = { n_nodes, n_nodes, n_dclass, n_nodes, n_nodes, n_nodes, n_nodes, 2, n_nodes, n_nodes, 0, n_nodes, n_nodes + 1 };
+		cols_req = { 12, 2, 1, 3, 4, 4, n_nodes, 2, n_dclass, n_nodes, 1, 1, 1 };
+		rows_req = { n_nodes, n_nodes, n_dclass, n_nodes, n_nodes, n_nodes, 2, n_nodes, n_nodes, 0, n_nodes, n_nodes + 1, n_nodes };
 	}
 	else {
-		cols_req = { 12, n_nodes * 2, 1, 3, 4, 4, 1, n_nodes, 2, n_dclass, n_nodes, 1, 1, n_nodes + 1 };
-		rows_req = { n_nodes, 0, n_dclass, n_nodes, n_nodes, n_nodes, n_nodes, 2, n_nodes, n_nodes, 0, n_nodes, 0 };
+		cols_req = { 12, n_nodes * 2, 1, 3, 4, 4, n_nodes, 2, n_dclass, n_nodes, 1, n_nodes + 1 };
+		rows_req = { n_nodes, 0, n_dclass, n_nodes, n_nodes, n_nodes, 2, n_nodes, n_nodes, 0, n_nodes, 0 };
 	}
 	check_file_size(input_path, file_names_req, cols_req, rows_req);
 
