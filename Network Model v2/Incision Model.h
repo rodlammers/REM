@@ -27,7 +27,7 @@ void incision_model(int& dt, vector<vector<double>>& Q, vector<vector<double>>& 
 	string& input_path, ofstream& loading_file, vector<vector<double>>& LB_x, ofstream& geom_file,
 	vector<vector<double>>& knick_height, vector<vector<double>>& knick_kd, vector<vector<double>>& knick_x,
 	vector<vector<double>>& knick_z, double& transport_factor, double& fluvial_factor, double& cohesive_factor, 
-	double& k_factor, int& dt_Q);
+	double& k_factor, int& dt_Q, vector<vector<double>>& bank_armoring, vector<vector<double>>& bank_veg);
 
 void incision_calcs(int& n_nodes, long& i, int& dt, int&day, vector<vector<double>>& slope,
 	vector<vector<double>>& bed_z, vector<double>& Ds, vector<double>& Ds_log, string& type, double& nu, double& lambda,

@@ -18,7 +18,7 @@
 //E: eroded distance (m)
 
 double BankShear(const double& omega, const double& width, const double& tau_c, double& bank_k, const int& dt,
-	const double& Rc, double& fluvial_factor, double& k_factor) {
+	const double& Rc, double& fluvial_factor, double& k_factor, double& bank_armoring) {
 	double tau_w; //wall shear stress (Pa)
 	double K; //erodibility coefficient (m^3/N-s)
 	double E; //Eroded distance (m)
@@ -53,9 +53,17 @@ double BankShear(const double& omega, const double& width, const double& tau_c, 
 		K = bank_k;
 	}
 
-	//If shear stress exceeds the critical value, calculate erosion, otherwise set erosion to zero
-	if (tau_w > tau_c) {
-		E = K * dt * (tau_w - tau_c);
+	//Only allow erosion to occur if shear stress exceeds critical shear stress of any bank armoring
+	if (tau_w > bank_armoring) {
+		//If shear stress exceeds the critical value, calculate erosion, otherwise set erosion to zero
+		if (tau_w > tau_c) {
+			E = K * dt * (tau_w - tau_c);
+		}
+		else {
+			E = 0.0;
+		}
+		//If bank armoring shear stress exceeded, the bank armoring failed and is lost (tau_c set to 0)
+		bank_armoring = 0;
 	}
 	else {
 		E = 0.0;
@@ -91,7 +99,7 @@ double BankShear(const double& omega, const double& width, const double& tau_c, 
 void BankFailure(double& height, double& angle, double& toe_height, double& toe_angle, 
 	double& cohesion, double& phi, double& weight, double& cohesion_toe, double& phi_toe,
 	double& weight_toe, double& top_width, double& bottom_width, double& fp_angle, double& fp_width,
-	double& bank_tank) {
+	double& bank_tank, double& bank_armoring, double& bank_veg) {
 
 	double failblock_area = 0;
 
@@ -109,6 +117,11 @@ void BankFailure(double& height, double& angle, double& toe_height, double& toe_
 	vector<double> phi_array = { phi, phi_toe };
 
 	vector<double> cohesion_array = { cohesion, cohesion_toe };
+
+	//If bank_veg is non-zero (restoration has increased bank cohesion), then replace cohesion values
+	if (bank_veg > 0) {
+		cohesion_array = { bank_veg, bank_veg };
+	}
 
 	vector<double> unit_weight_array = { weight, weight_toe };
 
@@ -196,6 +209,11 @@ void BankFailure(double& height, double& angle, double& toe_height, double& toe_
 			//Don't let fp width become negative
 			fp_width = max(fp_width, 0.0);
 		}
+
+		//If bank fails, bank armoring fails and tau_c = 0
+		bank_armoring = 0;
+		//Also if bank fails, bank vegetation cohesion is gone
+		bank_veg = 0;
 	}
 
 	//If bank failed, put failed soil block at bank toe, adjusting toe angle and bottom width
@@ -283,10 +301,10 @@ double calc_eroded_area(double& height, double& toe_height, double& angle,
 double FluvialErosion(double& omega, double& toe_angle, double& angle, double& toe_height, double& height,
 	double& eroded_area, double& bottom_width, double& tau_c, double& bank_k, int& dt, double& Rc,
 	double& top_width, double& fp_width, double& fp_angle, double& bank_tank, int& skip_bank_erosion,
-	double& fluvial_factor, double& k_factor) {
+	double& fluvial_factor, double& k_factor, double& bank_armoring) {
 
 	//Get eroded distance from bank shear function
-	double E = BankShear(omega, bottom_width, tau_c, bank_k, dt, Rc, fluvial_factor, k_factor);
+	double E = BankShear(omega, bottom_width, tau_c, bank_k, dt, Rc, fluvial_factor, k_factor, bank_armoring);
 
 	//Erode material from "bank_tank", if there is any
 	double eroded_area_tank = 0;
@@ -448,7 +466,8 @@ void BankErosion(vector<double>& tau_c, vector<double>& bank_k, vector<vector<do
 	vector<vector<double>>& fp_width_R, vector<vector<double>>& fp_width_L, vector<vector<double>>& bank_tank_RB,
 	vector<vector<double>>& bank_tank_LB, vector<vector<int>>& skip_bank_erosion_L, 
 	vector<vector<int>>& skip_bank_erosion_R, double& lambda, double& bank_sed_vol, double& fluvial_factor,
-	double& k_factor, vector<vector<double>>& meander_erosion) {
+	double& k_factor, vector<vector<double>>& meander_erosion, vector<vector<double>>& bank_armoring,
+	vector<vector<double>>& bank_veg) {
 
 	//Initialize stream power, eroded distance, and eroded area to zero
 	double omega = 0;
@@ -474,7 +493,7 @@ void BankErosion(vector<double>& tau_c, vector<double>& bank_k, vector<vector<do
 					double E_RB = FluvialErosion(omega, toe_angle_RB[j][k], angle_RB[j][k], toe_height_RB[j][k],
 						height_RB[j][k], eroded_area_RB, bottom_width[j][k], tau_c[j], bank_k[j], dt, Rc_RB,
 						top_width[j][k], fp_width_R[j][k], fp_angle[j][k], bank_tank_RB[j][k], skip_bank_erosion_R[j][k],
-						fluvial_factor, k_factor);
+						fluvial_factor, k_factor, bank_armoring[j][k]);
 				}
 
 				//Left bank erosion
@@ -483,7 +502,7 @@ void BankErosion(vector<double>& tau_c, vector<double>& bank_k, vector<vector<do
 					double E_LB = FluvialErosion(omega, toe_angle_LB[j][k], angle_LB[j][k], toe_height_LB[j][k],
 						height_LB[j][k], eroded_area_LB, bottom_width[j][k], tau_c[j], bank_k[j], dt, Rc_LB,
 						top_width[j][k], fp_width_L[j][k], fp_angle[j][k], bank_tank_LB[j][k], skip_bank_erosion_L[j][k],
-						fluvial_factor, k_factor);
+						fluvial_factor, k_factor, bank_armoring[j][k]);
 					LB_x[j][k] = LB_x[j][k] - (bottom_width[j][k] - width_old);
 				}
 				
@@ -495,7 +514,7 @@ void BankErosion(vector<double>& tau_c, vector<double>& bank_k, vector<vector<do
 					(skip_bank_erosion_L[j][k] != 2) & (skip_bank_erosion_R[j][k] != 2)) {
 					//Outer bank erosion distance
 					double E_outer = BankShear(omega, bottom_width[j][k], tau_c[j], bank_k[j],
-						dt, Rc[j][k], fluvial_factor, k_factor);
+						dt, Rc[j][k], fluvial_factor, k_factor, bank_armoring[j][k]);
 					meander_erosion[j][k] += E_outer;
 					////Inner bank erosion distance
 					//double E_inner = BankShear(omega, bottom_width[j][k], tau_c[j], bank_k[j],
@@ -590,7 +609,8 @@ void BankErosion(vector<double>& tau_c, vector<double>& bank_k, vector<vector<do
 					BankFailure(height_RB[j][k], angle_RB[j][k], toe_height_RB[j][k],
 						toe_angle_RB[j][k], cohesion[j], phi[j], weight[j], cohesion_toe[j],
 						phi_toe[j], weight_toe[j], top_width[j][k], bottom_width[j][k], fp_angle[j][k],
-						fp_width_R[j][k], bank_tank_RB[j][k]);
+						fp_width_R[j][k], bank_tank_RB[j][k], bank_armoring[j][k],
+						bank_veg[j][k]);
 				}
 
 				//run BSTEM for left bank
@@ -599,7 +619,8 @@ void BankErosion(vector<double>& tau_c, vector<double>& bank_k, vector<vector<do
 					BankFailure(height_LB[j][k], angle_LB[j][k], toe_height_LB[j][k],
 						toe_angle_LB[j][k], cohesion[j], phi[j], weight[j], cohesion_toe[j],
 						phi_toe[j], weight_toe[j], top_width[j][k], bottom_width[j][k], fp_angle[j][k],
-						fp_width_L[j][k], bank_tank_LB[j][k]);
+						fp_width_L[j][k], bank_tank_LB[j][k], bank_armoring[j][k],
+						bank_veg[j][k]);
 					LB_x[j][k] = LB_x[j][k] - (bottom_width[j][k] - width_old);
 				}
 			}

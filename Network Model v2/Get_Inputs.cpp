@@ -122,7 +122,8 @@ void input_rest(const string& input_path, string& input_type, int& n_nodes, int&
 	vector<vector<double>>& top_width, boost::multi_array<double, 3>& ps, boost::multi_array<double, 3>& fs,
 	vector<vector<double>>& n_bends, vector<double>& sinuosity, vector<vector<double>>& Rc,
 	vector<vector<double>>& LB_x, vector<vector<double>>& knick_height, vector<vector<double>>& knick_kd,
-	vector<vector<double>>& knick_x, vector<vector<double>>& knick_z) {
+	vector<vector<double>>& knick_x, vector<vector<double>>& knick_z, vector<vector<double>>& bank_armoring,
+	vector<vector<double>>& bank_veg) {
 
 	////Reset n_xs
 	//for (int i = 0; i <= n_nodes; ++i) {
@@ -386,6 +387,18 @@ void input_rest(const string& input_path, string& input_type, int& n_nodes, int&
 				+ (height_LB[i][j] - toe_height_LB[i][j]) / tan(angle_LB[i][j]);
 		}
 	}
+
+	//Restoration parameters
+	ifstream restoration_file;
+	restoration_file.open(input_path + "Input restoration.txt");
+
+	for (int j = 0; j < max_xs; ++j) {
+		for (int i = 0; i < n_nodes; ++i) {
+			restoration_file >> bank_armoring[i][j];
+			restoration_file >> bank_veg[i][j];
+		}
+	}
+	restoration_file.close();
 
 	//Get knickpoint info
 	vector < vector<double>> knick_dist(n_nodes, vector<double>(max_xs));

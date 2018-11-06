@@ -5,17 +5,17 @@
 using namespace std;
 
 double BankShear(const double& omega, const double& width, const double& tau_c, double& bank_k, const int& dt,
-	const double& Rc, double& fluvial_factor, double& k_factor);
+	const double& Rc, double& fluvial_factor, double& k_factor, double& bank_armoring);
 
 void BankFailure(double& height, double& angle, double& toe_height, double& toe_angle,
 	double& cohesion, double& phi, double& weight, double& cohesion_toe, double& phi_toe,
 	double& weight_toe, double& top_width, double& bottom_width, double& fp_angle, double& fp_width,
-	double& bank_tank);
+	double& bank_tank, double& bank_armoring, double& bank_veg);
 
 double FluvialErosion(double& omega, double& toe_angle, double& angle, double& toe_height, double& height,
 	double& eroded_area, double& bottom_width, double& tau_c, double& bank_k, int& dt, double& Rc,
 	double& top_width, double& fp_width, double& fp_angle, double& bank_tank, int& skip_bank_erosion,
-	double& fluvial_factor, double& k_factor);
+	double& fluvial_factor, double& k_factor, double& bank_armoring);
 
 double calc_eroded_area(double& height, double& toe_height, double& angle,
 	double& toe_angle, double& E, double& bottom_width,
@@ -41,6 +41,7 @@ void BankErosion(vector<double>& tau_c, vector<double>& bank_k, vector<vector<do
 	vector<vector<double>>& fp_width_R, vector<vector<double>>& fp_width_L, vector<vector<double>>& bank_tank_RB,
 	vector<vector<double>>& bank_tank_LB, vector<vector<int>>& skip_bank_erosion_L, 
 	vector<vector<int>>& skip_bank_erosion_R, double& lambda, double& bank_sed_vol,
-	double& fluvial_factor, double& k_factor, vector<vector<double>>& meander_erosion);
+	double& fluvial_factor, double& k_factor, vector<vector<double>>& meander_erosion, 
+	vector<vector<double>>& bank_armoring, vector<vector<double>>& bank_veg);
 
 #endif

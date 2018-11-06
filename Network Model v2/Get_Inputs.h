@@ -20,4 +20,5 @@ void input_rest(const string& input_path, string& input_type, int& n_nodes, int&
 	vector<vector<double>>& top_width, boost::multi_array<double, 3>& ps, boost::multi_array<double, 3>& fs,
 	vector<vector<double>>& n_bends, vector<double>& sinuosity, vector<vector<double>>& Rc,
 	vector<vector<double>>& LB_x, vector<vector<double>>& knick_height, vector<vector<double>>& knick_kd,
-	vector<vector<double>>& knick_x, vector<vector<double>>& knick_z);
+	vector<vector<double>>& knick_x, vector<vector<double>>& knick_z, vector<vector<double>>& bank_armoring,
+	vector<vector<double>>& bank_veg);

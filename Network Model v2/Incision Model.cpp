@@ -24,7 +24,7 @@ void incision_model(int& dt, vector<vector<double>>& Q, vector<vector<double>>& 
 	string& input_path, ofstream& loading_file, vector<vector<double>>& LB_x, ofstream& geom_file,
 	vector<vector<double>>& knick_height, vector<vector<double>>& knick_kd, vector<vector<double>>& knick_x,
 	vector<vector<double>>& knick_z, double& transport_factor, double& fluvial_factor, double& cohesive_factor,
-	double& k_factor, int& dt_Q) {
+	double& k_factor, int& dt_Q, vector<vector<double>>& bank_armoring, vector<vector<double>>& bank_veg) {
 
 	int n_days = Q.size(); //number of days to simulation
 	long n_ts = n_days * dt_Q / dt; //number of time steps for simulation
@@ -348,7 +348,7 @@ void incision_model(int& dt, vector<vector<double>>& Q, vector<vector<double>>& 
 				n_xs, bank_sed, dx_array, Rc, sinuosity, n_bends, meandering, bank_bedload_prop,
 				Q_iter, Q_iter_old, bank_sed_mass, bank_p_mass, p_conc, LB_x, fp_angle, fp_width_R, fp_width_L,
 				bank_tank_RB, bank_tank_LB, skip_bank_erosion_L, skip_bank_erosion_R, lambda, bank_wash_vol,
-				fluvial_factor, k_factor, meander_erosion);
+				fluvial_factor, k_factor, meander_erosion, bank_armoring, bank_veg);
 		}
 
 		//Output data at user specified frequency

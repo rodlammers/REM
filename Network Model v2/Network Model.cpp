@@ -163,7 +163,8 @@ int main() {
 
 	vector<string> file_names_opt = { "Input sed supply.txt",
 		"Input knickpoint.txt",
-		"Input meandering.txt" };
+		"Input meandering.txt",
+		"Input restoration.txt"};
 	file_type = "OPTIONAL";
 	check_files(input_path, file_names_opt, file_type);
 
@@ -239,8 +240,12 @@ int main() {
 	}
 	check_file_size(input_path, file_names_req, cols_req, rows_req);
 
-	vector<int> cols_opt = { n_nodes, 5, 2 };
-	vector<int> rows_opt = { 0, 0, n_nodes };
+	vector<int> cols_opt = { n_nodes, 5, 2, n_nodes * 2 };
+	vector<int> rows_opt = { 0, 0, n_nodes, 0 };
+	if (input_type == "reach") {
+		cols_opt[3] = 2;
+		rows_opt[3] = n_nodes;
+	}
 	check_file_size(input_path, file_names_opt, cols_opt, rows_opt);
 
 	//Sediment supply
@@ -303,6 +308,8 @@ int main() {
 	vector<vector<double>> knick_z(n_nodes, vector<double>(max_xs));
 	vector<vector<double>> knick_kd(n_nodes, vector<double>(max_xs));
 	vector<vector<double>> knick_x(n_nodes, vector<double>(max_xs));
+	vector<vector<double>> bank_armoring(n_nodes, vector<double>(max_xs));
+	vector<vector<double>> bank_veg(n_nodes, vector<double>(max_xs));
 		
 	typedef boost::multi_array<double, 3 > array;
 	array ps(boost::extents[n_nodes][max_xs][n_dclass]);
@@ -320,7 +327,8 @@ int main() {
 		bank_bedload_prop, bed_bedload_prop,
 		fp_angle, fp_width_R, fp_width_L, bed_tau_c, cohesive_z,
 		top_width, ps, fs, n_bends, sinuosity, Rc, LB_x,
-		knick_height, knick_kd, knick_x, knick_z);
+		knick_height, knick_kd, knick_x, knick_z, bank_armoring,
+		bank_veg);
 
 	//Factors for adjusting empirical equations in model (sed transport equations, tau_w = f(stream power), 
 	//tau_bed = f(stream power), and k = f(tau_w) from Simon et al. 2010)
@@ -357,7 +365,7 @@ int main() {
 				n_bends, meandering, dxout_file, cohesive_z, bed_tau_c, omegac_star, D50_file, MC, 
 				n_chnl, n_fp, fp_angle, fp_width_R, fp_width_L, bank_bedload_prop, bed_bedload_prop, input_path, loading_file, LB_x,
 				geom_file, knick_height, knick_kd, knick_x, knick_z, transport_factor, fluvial_factor, cohesive_factor, 
-				k_factor, dt_Q);
+				k_factor, dt_Q, bank_armoring, bank_veg);
 
 			//zout_file.close();
 			//width_file.close();
@@ -592,7 +600,7 @@ int main() {
 	bed_tau_c, omegac_star, n_chnl,	n_fp, fp_angle, fp_width_R, fp_width_L, b_MC, omega_star_MC, width_MC, fp_angle_MC, \
 	fp_LB_width_MC, fp_RB_width_MC, chnl_n_MC, fp_n_MC, ps_MC, dt, Q, link, Ds, sed_supply, lambda, type, nu, n_xs, p_conc, LB_x, \
 	bed_p_conc, bank_bedload_prop, bed_bedload_prop, knick_height, knick_kd, knick_x, knick_z, MC_outputs, MC_inputs, \
-	input_path, Ds_MC, sinuosity_MC, Rc_MC, dt_Q)
+	input_path, Ds_MC, sinuosity_MC, Rc_MC, dt_Q, bank_armoring, bank_veg)
 				for (int i_MC = 0; i_MC < n_MC; ++i_MC) {
 					//std::cout << "Thread " << omp_get_thread_num() << " Iteration " << i + 1 << "\n";
 					iteration += 1;
@@ -623,7 +631,8 @@ int main() {
 						bank_bedload_prop, bed_bedload_prop,
 						fp_angle, fp_width_R, fp_width_L, bed_tau_c, cohesive_z,
 						top_width, ps, fs, n_bends, sinuosity, Rc, LB_x,
-						knick_height, knick_kd, knick_x, knick_z);
+						knick_height, knick_kd, knick_x, knick_z, bank_armoring,
+						bank_veg);
 					
 					//Hiding function variables
 					if (std::find(MC_inputs.begin(), MC_inputs.end(), "hiding") != MC_inputs.end()) {
@@ -842,7 +851,7 @@ int main() {
 						n_bends, meandering, dxout_file, cohesive_z, bed_tau_c, omegac_star, D50_file, MC,
 						n_chnl, n_fp, fp_angle, fp_width_R, fp_width_L, bank_bedload_prop, bed_bedload_prop, input_path, loading_file, LB_x,
 						geom_file, knick_height, knick_kd, knick_x, knick_z, transport_factor, fluvial_factor, 
-						cohesive_factor, k_factor, dt_Q);
+						cohesive_factor, k_factor, dt_Q, bank_armoring, bank_veg);
 
 					//Print progress
 					if ((iteration / max(1, (n_MC / 20))) != ((iteration - 1) / max(1, (n_MC / 20)))) {
