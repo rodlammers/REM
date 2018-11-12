@@ -631,7 +631,13 @@ void incision_calcs(int& n_nodes, long& i, int& dt, int&day, vector<vector<doubl
 					if (Qi_US == 0) {
 						Qi_US = Qi[j][k][m];
 					}
-					Qi_DS = Qi[j][k + 1][m];
+					if (n_xs[j] == 1) {
+						int index = find(link, j + 1); //Index of DS node
+						Qi_DS = Qi[index][0][m];
+					}
+					else {
+						Qi_DS = Qi[j][k + 1][m];
+					}
 				}
 				else if (k == n_xs[j] - 1) {
 					//Most downstream XS in reach
