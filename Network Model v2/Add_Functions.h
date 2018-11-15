@@ -40,6 +40,11 @@ void print_geometry_final(vector<vector<double>>& height_LB, vector<vector<doubl
 	vector<vector<double>>& fp_width_R, vector<vector<double>>& fp_width_L, vector<vector<double>>& bed_z,
 	vector<vector<double>>& LB_x, ofstream& geom_file, double& time, vector<int>& n_xs);
 
+void print_ps(boost::multi_array<double, 3>& ps, int& n_nodes, int& n_dclass, string& input_path, int& n_xs_max,
+	vector<vector<double>>& cohesive_z, vector<vector<double>>& bed_tau_c, vector<vector<double>>& fp_angle,
+	vector<vector<double>>& fp_width_L, vector<vector<double>>& fp_width_R, vector<vector<double>>& bed_z,
+	vector<vector<double>>& bank_armoring, vector<vector<double>>& bank_veg);
+
 double Limiter(double& ri, string& limit_fun);
 
 int find(vector<vector<int>>& link, int value);

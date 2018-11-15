@@ -89,6 +89,16 @@ void incision_model(int& dt, vector<vector<double>>& Q, vector<vector<double>>& 
 	ofstream bed_sed_mass_file;
 	ofstream sediment_volume_file;
 
+	//Set precision of files
+	zout_file.precision(6);
+	zout_file.setf(ios::fixed);
+	dxout_file.precision(4);
+	dxout_file.setf(ios::fixed);
+	geom_file2.precision(6);
+	geom_file2.setf(ios::fixed);
+	sinuosity_out_file.precision(8);
+	sinuosity_out_file.setf(ios::fixed);
+
 	//Remove error file, if present
 	remove((input_path + "MODEL ERRORS.txt").c_str());
 
@@ -419,6 +429,10 @@ void incision_model(int& dt, vector<vector<double>>& Q, vector<vector<double>>& 
 
 	print_bank_outputs(time, loading_file, bank_sed_mass, bank_p_mass, cohesive_sed_mass, knick_sed_mass,
 		bed_p_mass);
+
+	//Print final ps
+	print_ps(ps, n_nodes, n_dclass, input_path, n_xs_max, cohesive_z, bed_tau_c, fp_angle, fp_width_L, fp_width_R,
+		bed_z, bank_armoring, bank_veg);
 
 	//Subtract eroded knickpoint volume based on remainder of XS
 	for (int j = 0; j < n_nodes; ++j) {

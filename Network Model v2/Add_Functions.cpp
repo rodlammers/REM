@@ -334,6 +334,42 @@ void print_geometry_final(vector<vector<double>>& height_LB, vector<vector<doubl
 
 }
 
+//print_ps: Prints final bed grain size distribution - useful if want to start REM using results
+//of previous simulation
+
+void print_ps(boost::multi_array<double, 3>& ps, int& n_nodes, int& n_dclass, string& input_path, int& n_xs_max,
+	vector<vector<double>>& cohesive_z, vector<vector<double>>& bed_tau_c, vector<vector<double>>& fp_angle, 
+	vector<vector<double>>& fp_width_L, vector<vector<double>>& fp_width_R, vector<vector<double>>& bed_z,
+	vector<vector<double>>& bank_armoring, vector<vector<double>>& bank_veg) {
+	
+	ofstream psout_file(input_path + "Output ps.txt");
+	ofstream cohesive_bed_file(input_path + "Output bed cohesive.txt");
+	ofstream fpout_file(input_path + "Output fp geometry.txt");
+	ofstream restoration_file(input_path + "Output restoration.txt");
+
+	psout_file.precision(8);
+	psout_file.setf(ios::fixed);
+
+	for (int j = 0; j < n_nodes; j++) {
+		fpout_file << fp_angle[j][0] * 180.0 / M_PI << " " << fp_width_L[j][0] << " " << fp_width_R[j][0] << "\n";
+
+		for (int m = 0; m < n_dclass; ++m) {
+			psout_file << ps[j][0][m] << " ";
+		}
+		psout_file << "\n";
+	}
+
+	// Print bed cohesive
+	for (int k = 0; k < n_xs_max; k++) {
+		for (int j = 0; j < n_nodes; j++) {
+			cohesive_bed_file << bed_tau_c[j][k] << " " << bed_z[j][k] - cohesive_z[j][k] << " ";
+			restoration_file << bank_armoring[j][k] << " " << bank_veg[j][k] << " ";
+		}
+		cohesive_bed_file << "\n";
+		restoration_file << "\n";
+	}
+}
+
 //Limiter: computes the limiter value for use in the flux-limiter sediment transport calculation
 
 //INPUTS:
